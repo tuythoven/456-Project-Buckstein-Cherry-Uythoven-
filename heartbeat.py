@@ -11,7 +11,7 @@ MISSED_THRESHOLD = 3
 
 logging.basicConfig(
     level = logging.INFO,
-    format="%(asctime)s [%(levelname)]s %(message)s",
+    format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.FileHandler("monitoring.log"),
         logging.StreamHandler(),

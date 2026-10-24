@@ -17,7 +17,7 @@ while True:
     data, addr = sock.recvfrom(1024)
 
     if data == b"PING":
-        sock.sendto(data, (HOST,PORT))
+        sock.sendto(data, ("ACK",addr))
         print("Received heartbeat, ACK sent")
 
     else:
