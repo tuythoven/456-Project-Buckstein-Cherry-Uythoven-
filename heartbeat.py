@@ -8,6 +8,7 @@ PORT = 8888
 INTERVAL_T = 1
 RESPONSE_WINDOW = 1
 MISSED_THRESHOLD = 3
+MONITOR_PORT = 9999 # fixed port so the monitor has a known, reachable address
 
 logging.basicConfig(
     level = logging.INFO,
@@ -20,6 +21,7 @@ logging.basicConfig(
 
 def run():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((HOST,MONITOR_PORT))
     sock.settimeout(RESPONSE_WINDOW)
 
     misses = 0
