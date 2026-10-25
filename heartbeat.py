@@ -47,7 +47,7 @@ def run():
                 f"({misses}/{MISSED_THRESHOLD})"
             )
 
-            if misses >= MISSED_THRESHOLD:
+            if misses == MISSED_THRESHOLD:
                 logging.error(
                     "[ALERT] Critical Service Failure Detected! "
                     f" {MISSED_THRESHOLD} consecutive missed replies. \n")
