@@ -1,5 +1,7 @@
 import logging
 import socket
+import subprocess
+import sys
 import time
 
 HOST = "127.0.0.1"
@@ -25,6 +27,9 @@ def run():
     sock.settimeout(RESPONSE_WINDOW)
 
     misses = 0
+    failure = False
+    replica = None
+    
     logging.info("Monitor started.")
     logging.info("Pinging service within a ceratin interval and response window.")
     logging.info("Failure threshold set.")
@@ -39,7 +44,7 @@ def run():
                     logging.info("Service recovered.")
                 misses = 0
 
-        except socket.timeout:
+        except (socket.timeout, ConnectionResetError):
             misses += 1
             timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
             logging.warning(
@@ -47,11 +52,18 @@ def run():
                 f"({misses}/{MISSED_THRESHOLD})"
             )
 
-            if misses == MISSED_THRESHOLD:
+            if misses >= MISSED_THRESHOLD and not failure:
                 logging.error(
-                    "[ALERT] Critical Service Failure Detected! "
-                    f" {MISSED_THRESHOLD} consecutive missed replies. \n")
-
+                    "[ALERT] [CRASH DETECTED] Critical Service Failure Detected! "
+                    f" {MISSED_THRESHOLD} consecutive missed replies."
+                )
+                logging.info("[FAILOVER_TRIGGERED] Launching standy replica service")
+                try:
+                    replica_process = subprocess.Popen([sys.executable, "replica.py"])
+                    failure = True
+                    logging.info("[SERVICE RESTORED] Standby replica node activated and bound to port.")
+                except Exception as e:
+                    logging.error(f"Failed to execute failover replica: {e}")
 
 if __name__ == "__main__":
     run()
